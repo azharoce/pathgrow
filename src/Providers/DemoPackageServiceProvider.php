@@ -1,6 +1,6 @@
 <?php
 
-namespace Tbs\Tbskit\Providers;
+namespace Twinbrotherstudio\Twinbrotherstudiokit\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

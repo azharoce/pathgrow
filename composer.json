@@ -1,11 +1,11 @@
 {
-    "name": "tbs/tbskit",
+    "name": "twinbrotherstudio/twinbrotherstudiokit",
     "description": "\"twin brother kit\"",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Tbs\\Tbskit\\": "src/"
+            "Twinbrotherstudio\\Twinbrotherstudio-kit\\": "src/"
         }
     },
     "authors": [
@@ -19,7 +19,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tbs\\Tbskit\\Providers\\DemoPackageServiceProvider"
+                "Twinbrotherstudio\\Twinbrotherstudiokit\\Providers\\DemoPackageServiceProvider"
             ]
         }
     }
