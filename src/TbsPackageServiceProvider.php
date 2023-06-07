@@ -4,7 +4,7 @@ namespace Twinbrotherstudio\Twinbrotherstudiokit;
 
 use Illuminate\Support\ServiceProvider;
 
-class DemoPackageServiceProvider extends ServiceProvider
+class TbsPackageServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -37,4 +37,28 @@ class DemoPackageServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/lang' => resource_path('lang/vendor/demo'),
         ]);
     }
+
+
+    public static function postAutoloadDump()
+    {
+        require_once $event->getComposer()->getConfig()->get('vendor-dir') . '/autoload.php';
+
+        // static::clearCompiled();
+    }
+    // protected static function clearCompiled()
+    // {
+    //     $laravel = new Application(getcwd());
+
+    //     if (is_file($configPath = $laravel->getCachedConfigPath())) {
+    //         @unlink($configPath);
+    //     }
+
+    //     if (is_file($servicesPath = $laravel->getCachedServicesPath())) {
+    //         @unlink($servicesPath);
+    //     }
+
+    //     if (is_file($packagesPath = $laravel->getCachedPackagesPath())) {
+    //         @unlink($packagesPath);
+    //     }
+    // }
 }

@@ -8,6 +8,7 @@
             "Twinbrotherstudio\\Twinbrotherstudio-kit\\": "src/"
         }
     },
+    
     "authors": [
         {
             "name": "Azharuddin Arrosis",
@@ -19,9 +20,16 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Twinbrotherstudio\\Twinbrotherstudiokit\\Providers\\DemoPackageServiceProvider"
+                "Twinbrotherstudio\\Twinbrotherstudiokit\\TbsPackageServiceProvider"
             ]
         }
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=twinbrotherstudio-config --ansi --force"
+        ]
+       
     }
+
 }
 
