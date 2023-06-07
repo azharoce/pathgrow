@@ -1,0 +1,27 @@
+{
+    "name": "tbs/tbskit",
+    "description": "\"twin brother kit\"",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Tbs\\Tbskit\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Azharuddin Arrosis",
+            "email": "azharoce@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tbs\\Tbskit\\Providers\\DemoPackageServiceProvider"
+            ]
+        }
+    }
+}
+
