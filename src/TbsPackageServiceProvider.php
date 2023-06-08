@@ -1,6 +1,6 @@
 <?php
 
-namespace Twinbrotherstudio\Twinbrotherstudiokit;
+namespace Twinbrotherstudio\kit;
 
 use Illuminate\Support\ServiceProvider;
 
