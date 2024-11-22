@@ -1,11 +1,11 @@
 {
-    "name": "twinbrotherstudio/kit",
-    "description": "\"twin brother kit\"",
+    "name": "studypath/sso",
+    "description": "\"Sso package\"",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Twinbrotherstudio\\Kit\\": "src/"
+            "Studypath\\Sso\\": "src/"
         }
     },
     
@@ -20,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Twinbrotherstudio\\Kit\\TbsPackageServiceProvider"
+                "Studypath\\Sso\\StudypathPackageServiceProvider"
             ]
         }
     },

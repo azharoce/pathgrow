@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'name' => 'Twin Brother studio',
+    'name' => 'Studypath package',
 ];

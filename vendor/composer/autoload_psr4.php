@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Twinbrotherstudio\\Twinbrotherstudio-kit\\' => array($baseDir . '/src'),
+    'Studypath\\Sso\\' => array($baseDir . '/src'),
 );
