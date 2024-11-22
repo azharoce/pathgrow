@@ -1,6 +1,6 @@
 {
-    "name": "studypath/sso",
-    "description": "\"Sso package\"",
+    "name": "pathgrow/studypath",
+    "description": "\"pathgrow package for studypath\"",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -20,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Studypath\\Sso\\StudypathPackageServiceProvider"
+                "pathgrow"
             ]
         }
     },

@@ -1,6 +1,6 @@
 <?php
 
-namespace Studypath\SSO;
+namespace PathGrow\SSO;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
