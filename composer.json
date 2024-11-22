@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Studypath\\Sso\\": "src/"
+            "Pathgrow\\Sso\\": "src/sso/",
+            "Pathgrow\\Utils\\Numbers\\": "src/utils/numbers/"
         }
     },
     
@@ -20,7 +21,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "pathgrow"
+                "Pathgrow\\Sso\\SSOClientProvider"
             ]
         }
     },
@@ -30,6 +31,4 @@
         ]
        
     }
-
 }
-

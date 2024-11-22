@@ -1,6 +1,6 @@
 <?php
 
-namespace PathGrow\Utils\ConvertNumber;
+namespace Pathgrow\Numbers;
 
 class ConvertNumber
 {

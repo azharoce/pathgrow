@@ -1,6 +1,6 @@
 <?php
 
-namespace PathGrow\SSO;
+namespace Pathgrow\SSO;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 
-class SSOServiceProvider extends ServiceProvider
+class SSOClientProvider extends ServiceProvider
 {
 
     public static function login(Request $request)

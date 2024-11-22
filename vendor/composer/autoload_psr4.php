@@ -6,5 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Studypath\\Sso\\' => array($baseDir . '/src'),
+    'Pathgrow\\Utils\\Numbers\\' => array($baseDir . '/src/utils/numbers'),
+    'Pathgrow\\Sso\\' => array($baseDir . '/src/sso'),
 );
