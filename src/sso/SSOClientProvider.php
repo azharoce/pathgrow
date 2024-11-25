@@ -69,6 +69,6 @@ class SSOClientProvider extends ServiceProvider
         }
         Auth::login($user);
         $request->session()->put('data', $response->json());
-        return redirect(route("/"));
+        return redirect("");
     }
 }
