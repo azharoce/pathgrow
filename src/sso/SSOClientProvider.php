@@ -14,8 +14,25 @@ use InvalidArgumentException;
 class SSOClientProvider extends ServiceProvider
 {
 
+    public static function checkingApps(Request $request)
+    {
+        $response = Http::withHeaders([
+            "Accept" => "application/json",
+        ])->post(env('SSO_HOST') . "/api/apps", [
+            'apps_id' => env('SSO_CLIENT_ID'),
+        ]);
+        $apps_status = $response->json();
+        if($apps_status['status']==1){
+            return true;
+        };
+        return false;
+    }
     public static function login(Request $request)
     {
+        $checkingApps = self::checkingApps($request);
+        if ($checkingApps){
+            return redirect("/")->withErrors("Maaf aplikasi anda belum diaktifkan");
+        }
         $request->session()->put("state", $state = Str::random(40));
         $query = http_build_query([
             "client_id" => env('SSO_CLIENT_ID'),
@@ -24,8 +41,6 @@ class SSOClientProvider extends ServiceProvider
             "scope" => "",
             "state" => $state,
         ]);
-
-
         return redirect(env('SSO_HOST') . "/oauth/authorize?" . $query);
     }
     public static function callback(Request $request)
@@ -55,9 +70,12 @@ class SSOClientProvider extends ServiceProvider
         try {
             $email = $dataUser["email"];
         } catch (\Throwable $th) {
-            return redirect("login")->withErrors("Failed get data information");
+            return redirect("login")->withErrors("Maaf akun ada tidak terdaftar di system SSO Kami.");
         }
 
+        if ($dataUser['apps_id'] != env('SSO_CLIENT_ID')) {
+            return redirect("/")->withErrors("Maaf Akun anda tidak boleh mengakses aplikasi ini.");
+        }
         $user = User::where('email', $email)->first();
 
         if (!$user) {
