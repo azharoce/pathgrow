@@ -22,7 +22,7 @@ class SSOClientProvider extends ServiceProvider
             'apps_id' => env('SSO_CLIENT_ID'),
         ]);
         $apps_status = $response->json();
-        if($apps_status['status']==1){
+        if ($apps_status['status'] == 1) {
             return true;
         };
         return false;
@@ -30,7 +30,7 @@ class SSOClientProvider extends ServiceProvider
     public static function login(Request $request)
     {
         $checkingApps = self::checkingApps($request);
-        if ($checkingApps){
+        if ($checkingApps) {
             return redirect("/")->withErrors("Maaf aplikasi anda belum diaktifkan");
         }
         $request->session()->put("state", $state = Str::random(40));
@@ -64,6 +64,7 @@ class SSOClientProvider extends ServiceProvider
         $response = Http::withHeaders([
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $access_token,
+            "apps-id" => env('SSO_CLIENT_ID'),
         ])->get(env('SSO_HOST') . "/api/user");
 
         $dataUser = $response->json();
