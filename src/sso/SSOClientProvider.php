@@ -13,13 +13,24 @@ use InvalidArgumentException;
 
 class SSOClientProvider extends ServiceProvider
 {
+    public static $client_id;
+    public static $secret_key;
+    public static $sso_redirect_uri;
+    public static $app_url;
 
+    public function __construct()
+    {
+        self::$client_id = getenv('APP_ID');
+        self::$secret_key = getenv('SECRET_KEY');
+        self::$sso_redirect_uri = getenv('APP_URL') . "/sso/callback";
+        self::$app_url = getenv('APP_URL');
+    }
     public static function checkingApps(Request $request)
     {
         $response = Http::withHeaders([
             "Accept" => "application/json",
         ])->post(env('SSO_HOST') . "/api/apps", [
-            'apps_id' => env('SSO_CLIENT_ID'),
+            'apps_id' => self::$client_id,
         ]);
         $apps_status = $response->json();
         if ($apps_status['status'] == 1) {
@@ -35,12 +46,13 @@ class SSOClientProvider extends ServiceProvider
         }
         $request->session()->put("state", $state = Str::random(40));
         $query = http_build_query([
-            "client_id" => env('SSO_CLIENT_ID'),
-            "redirect_uri" => env('SSO_REDIRECT_URI'),
+            "client_id" => self::$client_id,
+            "redirect_uri" => self::$sso_redirect_uri,
             "response_type" => "code",
             "scope" => "",
             "state" => $state,
         ]);
+
         return redirect(env('SSO_HOST') . "/oauth/authorize?" . $query);
     }
     public static function callback(Request $request)
@@ -50,11 +62,12 @@ class SSOClientProvider extends ServiceProvider
 
         $response = Http::asForm()->post(env('SSO_HOST') . "/oauth/token", [
             "grant_type" => "authorization_code",
-            "client_id" => env('SSO_CLIENT_ID'),
-            "client_secret" => env('SSO_CLIENT_SECRET'),
-            "redirect_uri" => env('SSO_REDIRECT_URI'),
+            "client_id" => self::$client_id,
+            "client_secret" => self::$secret_key,
+            "redirect_uri" => self::$sso_redirect_uri,
             "code" => $request->code,
         ]);
+
         $request->session()->put($response->json());
         return redirect(route("sso.account"));
     }
@@ -64,7 +77,7 @@ class SSOClientProvider extends ServiceProvider
         $response = Http::withHeaders([
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $access_token,
-            "apps-id" => env('SSO_CLIENT_ID'),
+            "apps-id" => self::$client_id,
         ])->get(env('SSO_HOST') . "/api/user");
 
         $dataUser = $response->json();
@@ -73,8 +86,10 @@ class SSOClientProvider extends ServiceProvider
         } catch (\Throwable $th) {
             return redirect("login")->withErrors("Maaf akun ada tidak terdaftar di system SSO Kami.");
         }
-
-        if ($dataUser['apps_id'] != env('SSO_CLIENT_ID')) {
+        if (empty($dataUser['apps_id'])) {
+            return redirect("/")->withErrors("Maaf Akun anda tidak boleh mengakses aplikasi ini.");
+        }
+        if ($dataUser['apps_id'] != self::$client_id) {
             return redirect("/")->withErrors("Maaf Akun anda tidak boleh mengakses aplikasi ini.");
         }
         $user = User::where('email', $email)->first();
