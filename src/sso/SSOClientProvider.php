@@ -29,9 +29,8 @@ class SSOClientProvider extends ServiceProvider
     {
         $response = Http::withHeaders([
             "Accept" => "application/json",
-        ])->post(env('SSO_HOST') . "/api/apps", [
-            'apps_id' => self::$client_id,
-        ]);
+            "apps-id" => self::$client_id,
+        ])->post(env('SSO_HOST') . "/api/apps");
         $apps_status = $response->json();
         if ($apps_status['status'] == 1) {
             return true;
