@@ -20,10 +20,10 @@ class SSOClientProvider extends ServiceProvider
 
     public function __construct()
     {
-        self::$client_id = getenv('APP_ID');
-        self::$secret_key = getenv('SECRET_KEY');
-        self::$sso_redirect_uri = getenv('APP_URL') . "/sso/callback";
-        self::$app_url = getenv('APP_URL');
+        self::$client_id = getenv('APP_ID') ? ENV('APP_ID') : getenv('APP_ID');
+        self::$secret_key = getenv('SECRET_KEY') ? ENV('SECRET_KEY') : getenv('SECRET_KEY');
+        self::$sso_redirect_uri = getenv('APP_URL') . "/sso/callback" ? ENV('APP_URL') . "/sso/callback" : getenv('APP_URL') . "/sso/callback";
+        self::$app_url = getenv('APP_URL') ? ENV('APP_URL') : getenv('APP_URL');
     }
     public static function checkingApps(Request $request)
     {
@@ -101,6 +101,10 @@ class SSOClientProvider extends ServiceProvider
             $user->save();
         }
         Auth::login($user);
+        if ($user) {
+            $token = $user->createToken('MyAppToken')->accessToken;
+            $request->session()->put('api_token', $token);
+        }
         $request->session()->put('data', $response->json());
         return redirect("");
     }
