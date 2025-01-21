@@ -15,14 +15,15 @@ use Illuminate\Http\JsonResponse;
 
 class SSOClientProvider extends ServiceProvider
 {
-    public static $client_id;
+    public static $apps_id;
     public static $secret_key;
     public static $sso_redirect_uri;
     public static $app_url;
 
     public function __construct()
     {
-        self::$client_id = getenv('APP_ID') ? ENV('APP_ID') : getenv('APP_ID');
+        self::$apps_id = getenv('APP_ID') ? ENV('APP_ID') : getenv('APP_ID');
+        self::$client_id = getenv('CLIENT_ID') ? ENV('CLIENT_ID') : getenv('CLIENT_ID');
         self::$secret_key = getenv('SECRET_KEY') ? ENV('SECRET_KEY') : getenv('SECRET_KEY');
         self::$sso_redirect_uri = getenv('APP_URL') . "/sso/callback" ? ENV('APP_URL') . "/sso/callback" : getenv('APP_URL') . "/sso/callback";
         self::$app_url = getenv('APP_URL') ? ENV('APP_URL') : getenv('APP_URL');
@@ -31,7 +32,7 @@ class SSOClientProvider extends ServiceProvider
     {
         $response = Http::withHeaders([
             "Accept" => "application/json",
-            "apps-id" => self::$client_id,
+            "apps-id" => self::$apps_id,
         ])->post(env('SSO_HOST') . "/api/apps");
         $apps_status = $response->json();
         if ($apps_status['status'] == 1) {
@@ -47,7 +48,7 @@ class SSOClientProvider extends ServiceProvider
         }
         $request->session()->put("state", $state = Str::random(40));
         $query = http_build_query([
-            "client_id" => self::$client_id,
+            "apps_id" => self::$apps_id,
             "redirect_uri" => self::$sso_redirect_uri,
             "response_type" => "code",
             "scope" => "",
@@ -87,6 +88,7 @@ class SSOClientProvider extends ServiceProvider
             $user = new User;
             $user->name = $dataUser['name'];
             $user->email = $dataUser['email'];
+            $user->client_id = $dataUser['client_code'];
             $user->email_verified_at = $dataUser['email_verified_at'];
             $user->save();
         }
@@ -94,7 +96,7 @@ class SSOClientProvider extends ServiceProvider
         $data = array();
         if ($user) {
             Auth::login($user);
-            $token = $user->createToken('MyAppToken')->accessToken;
+            $token = $user->createToken(self::$apps_id)->accessToken;
             $data['token'] = $token;
             $data['user'] = $user;
             $data['message'] = 'Login Berhasil';
@@ -110,7 +112,7 @@ class SSOClientProvider extends ServiceProvider
 
         $response = Http::asForm()->post(env('SSO_HOST') . "/oauth/token", [
             "grant_type" => "authorization_code",
-            "client_id" => self::$client_id,
+            "apps_id" => self::$apps_id,
             "client_secret" => self::$secret_key,
             "redirect_uri" => self::$sso_redirect_uri,
             "code" => $request->code,
@@ -125,7 +127,7 @@ class SSOClientProvider extends ServiceProvider
         $response = Http::withHeaders([
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $access_token,
-            "apps-id" => self::$client_id,
+            "apps-id" => self::$apps_id,
         ])->get(env('SSO_HOST') . "/api/user");
 
         $dataUser = $response->json();
@@ -137,7 +139,7 @@ class SSOClientProvider extends ServiceProvider
         if (empty($dataUser['apps_id'])) {
             return redirect("/")->withErrors("Maaf Akun anda tidak boleh mengakses aplikasi ini.");
         }
-        if ($dataUser['apps_id'] != self::$client_id) {
+        if ($dataUser['apps_id'] != self::$apps_id) {
             return redirect("/")->withErrors("Maaf Akun anda tidak boleh mengakses aplikasi ini.");
         }
         $user = User::where('email', $email)->first();
@@ -146,12 +148,13 @@ class SSOClientProvider extends ServiceProvider
             $user = new User;
             $user->name = $dataUser['name'];
             $user->email = $dataUser['email'];
+            $user->client_id = $dataUser['client_code'];
             $user->email_verified_at = $dataUser['email_verified_at'];
             $user->save();
         }
         Auth::login($user);
         if ($user) {
-            $token = $user->createToken('MyAppToken')->accessToken;
+            $token = $user->createToken(self::$apps_id)->accessToken;
             $request->session()->put('api_token', $token);
         }
         $request->session()->put('data', $response->json());
