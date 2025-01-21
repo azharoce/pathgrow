@@ -49,7 +49,7 @@ class SSOClientProvider extends ServiceProvider
         }
         $request->session()->put("state", $state = Str::random(40));
         $query = http_build_query([
-            "apps_id" => self::$apps_id,
+            "client_id" => self::$apps_id,
             "redirect_uri" => self::$sso_redirect_uri,
             "response_type" => "code",
             "scope" => "",
