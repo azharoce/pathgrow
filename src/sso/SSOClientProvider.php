@@ -113,7 +113,7 @@ class SSOClientProvider extends ServiceProvider
 
         $response = Http::asForm()->post(env('SSO_HOST') . "/oauth/token", [
             "grant_type" => "authorization_code",
-            "apps_id" => self::$apps_id,
+            "client_id" => self::$apps_id,
             "client_secret" => self::$secret_key,
             "redirect_uri" => self::$sso_redirect_uri,
             "code" => $request->code,
