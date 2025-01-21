@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
+use Illuminate\Http\JsonResponse;
+
 
 class SSOClientProvider extends ServiceProvider
 {
@@ -53,6 +55,53 @@ class SSOClientProvider extends ServiceProvider
         ]);
 
         return redirect(env('SSO_HOST') . "/oauth/authorize?" . $query);
+    }
+    public static function loginApps(Request $request): JsonResponse
+    {
+
+        $response = Http::withHeaders([
+            "Accept" => "application/json",
+        ])->post(env('SSO_HOST') . "/api/login", [
+            'email' => $request->email,
+            'password' => $request->password
+        ]);
+
+        $apps_status = $response->json();
+
+        $response = Http::withHeaders([
+            "Accept" => "application/json",
+            "Authorization" => "Bearer " . $apps_status['data']['token'],
+            "apps-id" => config('app.app_id')
+        ])->get(env('SSO_HOST') . "/api/user");
+
+        $dataUser = $response->json();
+        try {
+            $email = $dataUser["email"];
+        } catch (\Throwable $th) {
+            return redirect("login")->withErrors("Maaf akun ada tidak terdaftar di system SSO Kami.");
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            $user = new User;
+            $user->name = $dataUser['name'];
+            $user->email = $dataUser['email'];
+            $user->email_verified_at = $dataUser['email_verified_at'];
+            $user->save();
+        }
+
+        $data = array();
+        if ($user) {
+            Auth::login($user);
+            $token = $user->createToken('MyAppToken')->accessToken;
+            $data['token'] = $token;
+            $data['user'] = $user;
+            $data['message'] = 'Login Berhasil';
+            $data['status'] = 'success';
+        }
+
+        return response()->json($data);
     }
     public static function callback(Request $request)
     {
