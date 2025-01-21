@@ -19,6 +19,7 @@ class SSOClientProvider extends ServiceProvider
     public static $secret_key;
     public static $sso_redirect_uri;
     public static $app_url;
+    public static $client_id;
 
     public function __construct()
     {
