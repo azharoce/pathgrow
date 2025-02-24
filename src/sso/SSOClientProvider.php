@@ -20,9 +20,11 @@ class SSOClientProvider extends ServiceProvider
     public static $sso_redirect_uri;
     public static $app_url;
     public static $client_id;
+    public static $tenan_id;
 
     public function __construct()
     {
+        self::$tenan_id = getenv('TENAN_ID') ? ENV('TENAN_ID') : getenv('TENAN_ID');
         self::$apps_id = getenv('APP_ID') ? ENV('APP_ID') : getenv('APP_ID');
         self::$client_id = getenv('CLIENT_ID') ? ENV('CLIENT_ID') : getenv('CLIENT_ID');
         self::$secret_key = getenv('SECRET_KEY') ? ENV('SECRET_KEY') : getenv('SECRET_KEY');
@@ -35,6 +37,7 @@ class SSOClientProvider extends ServiceProvider
             "Accept" => "application/json",
             "apps-id" => self::$apps_id,
             "client-id" => self::$client_id,
+            "tenan-id" => self::$tenan_id,
         ])->post(env('SSO_HOST') . "/api/apps");
         $apps_status = $response->json();
         if ($apps_status['status'] == 1) {
@@ -76,8 +79,9 @@ class SSOClientProvider extends ServiceProvider
         $response = Http::withHeaders([
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $apps_status['data']['token'],
-            "client-id" => config('app.client_id')
-            "apps-id" => config('app.app_id')
+            "client-id" => config('app.client_id'),
+            "apps-id" => config('app.app_id'),
+            "tenan-id" => config('app.tenan_id'),
         ])->get(env('SSO_HOST') . "/api/user");
 
         $dataUser = $response->json();
@@ -133,7 +137,8 @@ class SSOClientProvider extends ServiceProvider
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $access_token,
             "apps-id" => self::$apps_id,
-            "client-id" => self::$client_id
+            "client-id" => self::$client_id,
+            "tenan-id" => self::$tenan_id
         ])->get(env('SSO_HOST') . "/api/user");
 
         $dataUser = $response->json();
