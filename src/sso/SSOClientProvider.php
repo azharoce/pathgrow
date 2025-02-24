@@ -34,6 +34,7 @@ class SSOClientProvider extends ServiceProvider
         $response = Http::withHeaders([
             "Accept" => "application/json",
             "apps-id" => self::$apps_id,
+            "client-id" => self::$client_id,
         ])->post(env('SSO_HOST') . "/api/apps");
         $apps_status = $response->json();
         if ($apps_status['status'] == 1) {
@@ -49,7 +50,7 @@ class SSOClientProvider extends ServiceProvider
         }
         $request->session()->put("state", $state = Str::random(40));
         $query = http_build_query([
-            "client_id" => self::$apps_id,
+            "client_id" => self::$client_id,
             "redirect_uri" => self::$sso_redirect_uri,
             "response_type" => "code",
             "scope" => "",
@@ -69,10 +70,13 @@ class SSOClientProvider extends ServiceProvider
         ]);
 
         $apps_status = $response->json();
-
+        if (array_key_exists('error', $apps_status)) {
+            return response()->json(['message' => 'Login Gagal', 'status' => 'error']);
+        }
         $response = Http::withHeaders([
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $apps_status['data']['token'],
+            "client-id" => config('app.client_id')
             "apps-id" => config('app.app_id')
         ])->get(env('SSO_HOST') . "/api/user");
 
@@ -113,7 +117,7 @@ class SSOClientProvider extends ServiceProvider
 
         $response = Http::asForm()->post(env('SSO_HOST') . "/oauth/token", [
             "grant_type" => "authorization_code",
-            "client_id" => self::$apps_id,
+            "client_id" => self::$client_id,
             "client_secret" => self::$secret_key,
             "redirect_uri" => self::$sso_redirect_uri,
             "code" => $request->code,
@@ -129,6 +133,7 @@ class SSOClientProvider extends ServiceProvider
             "Accept" => "application/json",
             "Authorization" => "Bearer " . $access_token,
             "apps-id" => self::$apps_id,
+            "client-id" => self::$client_id
         ])->get(env('SSO_HOST') . "/api/user");
 
         $dataUser = $response->json();
