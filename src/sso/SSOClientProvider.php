@@ -145,7 +145,7 @@ class SSOClientProvider extends ServiceProvider
         try {
             $email = $dataUser["email"];
         } catch (\Throwable $th) {
-            return redirect("login")->withErrors("Maaf akun ada tidak terdaftar di system SSO Kami.");
+            return redirect("/")->withErrors("Maaf akun ada tidak terdaftar di system SSO Kami.");
         }
         if (empty($dataUser['apps_id'])) {
             return redirect("/")->withErrors("Maaf Akun anda tidak boleh mengakses aplikasi ini.");
